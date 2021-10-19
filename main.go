@@ -77,7 +77,10 @@ func pingUp(c chan CheckResult) {
 
 	pinger.Count = 3
 	pinger.Timeout = time.Second * 10
-	pinger.Run()
+	pingerErr := pinger.Run()
+	if pingerErr != nil {
+		panic(err)
+	}
 	stats := pinger.Statistics()
 
 	checkResult.Up = true
