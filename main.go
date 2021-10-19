@@ -24,33 +24,30 @@ func main() {
 
 	fmt.Printf("[%v] Starting upcheck...\n", time.Now().Format("2006-01-02 15:04:05"))
 
-	for {
-		ch := make(chan CheckResult)
+	ch := make(chan CheckResult)
 
-		wg.Add(2)
-		go httpUp(ch)
-		go pingUp(ch)
+	wg.Add(2)
+	go httpUp(ch)
+	go pingUp(ch)
 
-		go func() {
-			wg.Wait()
-			close(ch)
-		}()
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
 
-		for res := range ch {
-			if !res.Up {
-				fmt.Printf("[%v] Outage detected status: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
-				return
-			}
-
-			if VERBOSE {
-				fmt.Printf("[%v] Successful CheckResult: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
-			}
+	for res := range ch {
+		if !res.Up {
+			fmt.Printf("[%v] Outage detected status: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
+			return
 		}
 
 		if VERBOSE {
-			fmt.Printf("Sleep %d seconds...\n", SLEEP_SECONDS)
+			fmt.Printf("[%v] Successful CheckResult: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
 		}
-		time.Sleep(time.Second * SLEEP_SECONDS)
+	}
+
+	if VERBOSE {
+		fmt.Printf("Sleep %d seconds...\n", SLEEP_SECONDS)
 	}
 }
 
