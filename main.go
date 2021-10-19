@@ -17,9 +17,12 @@ type CheckResult struct {
 
 var wg sync.WaitGroup
 
+const VERBOSE = false
+const SLEEP_SECONDS = 30
+
 func main() {
 
-	fmt.Println("Starting outage test...")
+	fmt.Printf("[%v] Starting upcheck...\n", time.Now().Format("2006-01-02 15:04:05"))
 
 	for {
 		ch := make(chan CheckResult)
@@ -39,11 +42,15 @@ func main() {
 				return
 			}
 
-			fmt.Printf("[%v] Successful CheckResult: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
+			if VERBOSE {
+				fmt.Printf("[%v] Successful CheckResult: %s. Latency:%v\n", time.Now().Format("2006-01-02 15:04:05"), res.Status, res.Latency)
+			}
 		}
 
-		fmt.Println("Sleep 5 seconds...")
-		time.Sleep(time.Second * 5)
+		if VERBOSE {
+			fmt.Printf("Sleep %d seconds...\n", SLEEP_SECONDS)
+		}
+		time.Sleep(time.Second * SLEEP_SECONDS)
 	}
 }
 
