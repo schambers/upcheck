@@ -56,6 +56,7 @@ func httpUp(c chan CheckResult) {
 	result := CheckResult{}
 	if err != nil {
 		result.Up = false
+		return
 	}
 
 	result.Up = true
